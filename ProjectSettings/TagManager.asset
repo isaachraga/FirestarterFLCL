@@ -9,6 +9,7 @@ TagManager:
   - Burnt
   - FireFighter
   - Police
+  - Grid
   layers:
   - Default
   - TransparentFX
