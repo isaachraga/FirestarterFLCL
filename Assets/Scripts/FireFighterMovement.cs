@@ -5,12 +5,7 @@ using System.Linq;
 
 public class FireFighterMovement : MonoBehaviour
 {
-    //
-    //limit firefighter search range to generated area only
-    //
-    //dont let fire fighters pass through each other
-
-    // float speed = 1;
+    
     public float CheckRate = 1f;
     float Timer;
     public bool PathComplete = false;
@@ -26,11 +21,15 @@ public class FireFighterMovement : MonoBehaviour
     Transform spawnLocation;
     Vector3 TempLeash;
     float LeashDistance = 200f;
+    public float LighterDenominator;
+    public float FirebombDenominator;
+    public GameObject LighterDrop;
+    public GameObject FireBombDrop;
 
     [Space]
 
     public Transform currentCube;
-    public Transform clickedCube;
+    public Transform targetCube;
 
 
     public List<Transform> finalPath = new List<Transform>();
@@ -50,6 +49,7 @@ public class FireFighterMovement : MonoBehaviour
         
         if (Timer >= CheckRate)
         {
+            //gets current location
             RaycastDown();
             
             if (!tempDissable)
@@ -60,6 +60,7 @@ public class FireFighterMovement : MonoBehaviour
                    //and if there are burnt buildings   
                    if (FindClosestBurntBuildingsTest() != null)
                    {
+                        //find a new burnt building to fix
                         PathComplete = false;
                         RetrievePathOptions(FindClosestBurntBuilding());
                    } 
@@ -76,24 +77,24 @@ public class FireFighterMovement : MonoBehaviour
 
     }
 
-    void FFRebuildRoute(Transform TempClickedCube)
+    //not necessary if fire fighters are spaced out more than their leash
+    /*void FFRebuildRoute(Transform TempTargetCube)
     {
         Debug.Log("Hit FF");
-        if (clickedCube != null)
+        if (targetCube != null)
         {
-            
-            
+
             Clear();
-            clickedCube = TempClickedCube;
+            targetCube = TempTargetCube;
             
             PathComplete = false;
             RaycastDown();
             FindPath();
-            Debug.Log(clickedCube.name);
+            Debug.Log(targetCube.name);
 
 
         }
-    }
+    }*/
 
     Transform FindClosestBurntBuildingsTest()
     {
@@ -229,7 +230,7 @@ public class FireFighterMovement : MonoBehaviour
 
             if (ShortestDistance > TempDistance.sqrMagnitude)
             {
-                clickedCube = pathOptions[i].transform;
+                targetCube = pathOptions[i].transform;
                 ShortestDistance = TempDistance.sqrMagnitude;
             }
         }
@@ -270,7 +271,7 @@ public class FireFighterMovement : MonoBehaviour
         Transform current = nextCubes.First();
         nextCubes.Remove(current);
 
-        if (current == clickedCube)
+        if (current == targetCube)
         {
             nextCubes.Clear();
             visitedCubes.Clear();
@@ -298,7 +299,7 @@ public class FireFighterMovement : MonoBehaviour
     void BuildPath()
     {
         //builds the route
-        Transform cube = clickedCube;
+        Transform cube = targetCube;
         while (cube != currentCube)
         {
             finalPath.Add(cube);
@@ -308,7 +309,7 @@ public class FireFighterMovement : MonoBehaviour
                 return;
         }
 
-        finalPath.Insert(0, clickedCube);
+        finalPath.Insert(0, targetCube);
 
         StartCoroutine(PursuitPath());
 
@@ -323,7 +324,7 @@ public class FireFighterMovement : MonoBehaviour
         }
         finalPath.Clear();
         currentCube = null;
-        clickedCube = null;
+        targetCube = null;
         Traveling = false;
         StopAllCoroutines();
         PathComplete = true;
@@ -365,107 +366,6 @@ public class FireFighterMovement : MonoBehaviour
 
         }
     }
-
-    /*bool FireRaycast(int direction)
-    {
-        if (direction == 0)
-        {
-
-            Ray playerRay = new Ray(transform.position, transform.forward);
-            RaycastHit playerHit;
-
-            if (Physics.Raycast(playerRay, out playerHit))
-            {
-                if (playerHit.transform.CompareTag("FireFighter"))
-                {
-
-                    playerHit.transform.GetComponent<FireFighterMovement>().RaycastDownDissable();
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            else
-            {
-                return false;
-            }
-        }
-        else if (direction == 1)
-        {
-            Ray playerRay = new Ray(transform.position, -transform.right);
-            RaycastHit playerHit;
-
-            if (Physics.Raycast(playerRay, out playerHit))
-            {
-                if (playerHit.transform.CompareTag("FireFighter"))
-                {
-
-                    playerHit.transform.GetComponent<FireFighterMovement>().RaycastDownDissable();
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            else
-            {
-                return false;
-            }
-        }
-        else if (direction == 2)
-        {
-            Ray playerRay = new Ray(transform.position, -transform.forward);
-            RaycastHit playerHit;
-
-            if (Physics.Raycast(playerRay, out playerHit))
-            {
-                if (playerHit.transform.CompareTag("FireFighter"))
-                {
-
-                    playerHit.transform.GetComponent<FireFighterMovement>().RaycastDownDissable();
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            else
-            {
-                return false;
-            }
-        }
-        else if (direction == 3)
-        {
-            Ray playerRay = new Ray(transform.position, transform.right);
-            RaycastHit playerHit;
-
-            if (Physics.Raycast(playerRay, out playerHit))
-            {
-                if (playerHit.transform.CompareTag("FireFighter"))
-                {
-
-                    playerHit.transform.GetComponent<FireFighterMovement>().RaycastDownDissable();
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            else
-            {
-                return false;
-            }
-        }
-        else
-        {
-            return false;
-        }
-    }*/
 
     public void RaycastDownDissable()
     {
@@ -833,6 +733,20 @@ public class FireFighterMovement : MonoBehaviour
         }
     }
 
+    void PowerupDrop()
+    {
+        int TempLighterNum = (int)Random.Range(1f, LighterDenominator);
+        int TempFireBombNum = (int)Random.Range(1f, FirebombDenominator);
+        if(TempLighterNum == 3)
+        {
+            GameObject g = (GameObject)Instantiate(LighterDrop, transform.position, transform.rotation);
+        }
+        else if(TempFireBombNum == 3)
+        {
+            GameObject g = (GameObject)Instantiate(FireBombDrop, transform.position, transform.rotation);
+        }
+    }
+
 
     IEnumerator PursuitPath()
     {
@@ -849,11 +763,12 @@ public class FireFighterMovement : MonoBehaviour
 
                     FullPlayerCheck(i);
                 }
-                
-                if (finalPath[i].GetComponent<PathBuilder>().CheckForFireFighter() == true)
+
+                //not necessary if fire fighters are spaced out more than their leash
+                /*if (finalPath[i].GetComponent<PathBuilder>().CheckForFireFighter() == true)
                 {
                     finalPath[i].GetComponent<PathBuilder>().SendFireFighter().GetComponent<FireFighterMovement>().RaycastDownDissable();
-                    FFRebuildRoute(clickedCube);
+                    FFRebuildRoute(targetCube);
                     
                     
                     
@@ -862,17 +777,20 @@ public class FireFighterMovement : MonoBehaviour
                 else
                 {
                     transform.position = finalPath[i].GetComponent<PathBuilder>().GetWalkPoint();
-                }
+                }*/
+
+                //if using ff avoidance, delete this 
+                transform.position = finalPath[i].GetComponent<PathBuilder>().GetWalkPoint();
 
 
 
-                
-                
+
                 yield return new WaitForSeconds(CheckRate);
             }
             Clear();
             StartCoroutine(Rebuild());
             PathComplete = true;
+            StartCoroutine(DropPowerUp());
            
 
         }
@@ -883,6 +801,12 @@ public class FireFighterMovement : MonoBehaviour
         yield return new WaitForSeconds(BuildTime);
         TargetBuilding.GetComponent<BurntBuilding>().Rebuild();
         Building = false;
+    }
+    IEnumerator DropPowerUp()
+    {
+        yield return new WaitForSeconds(5f);
+        PowerupDrop();
+        
     }
 
 

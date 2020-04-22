@@ -19,7 +19,7 @@ public class CharacterMovement : MonoBehaviour
                 TurnOff();
                 transform.position += transform.forward * speed;
             }
-            CheckSpace();
+            //CheckSpace();
         }
         if (Input.GetKeyDown(KeyCode.A)){
             if (Raycast(1))
@@ -27,7 +27,7 @@ public class CharacterMovement : MonoBehaviour
                 TurnOff();
                 transform.position += transform.right * -speed;
             }
-            CheckSpace();
+            //CheckSpace();
         }
         if (Input.GetKeyDown(KeyCode.S)){
             if (Raycast(2))
@@ -35,7 +35,7 @@ public class CharacterMovement : MonoBehaviour
                 TurnOff();
                 transform.position += transform.forward * -speed;
             }
-            CheckSpace();
+           // CheckSpace();
         }
         if (Input.GetKeyDown(KeyCode.D)){
             if (Raycast(3))
@@ -45,7 +45,7 @@ public class CharacterMovement : MonoBehaviour
 
             }
             
-            CheckSpace();
+            //CheckSpace();
         }
     }
 

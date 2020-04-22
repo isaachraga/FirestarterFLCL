@@ -6,7 +6,7 @@ public class Check : MonoBehaviour
 {
 
     //checks for burnt buildings
-    int BurnType = 0;
+    public int BurnType = 0;
     public int LighterAmmo;
     public int FireBombAmmo;
     

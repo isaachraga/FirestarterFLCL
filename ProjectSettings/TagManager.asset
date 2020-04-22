@@ -9,6 +9,9 @@ TagManager:
   - Burnt
   - FireFighter
   - Police
+  - Grid
+  - Lighter
+  - FireBomb
   layers:
   - Default
   - TransparentFX
@@ -19,8 +22,8 @@ TagManager:
   - 
   - 
   - IgnoreBuilding
-  - 
-  - 
+  - ShadowUI
+  - PostProcessing
   - 
   - 
   - 
