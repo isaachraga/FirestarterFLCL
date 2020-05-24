@@ -11,7 +11,7 @@
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace></RootNamespace>
-    <ProjectGuid>{7D863F70-8A0C-BBBF-A3D2-7A8FF31A04AC}</ProjectGuid>
+    <ProjectGuid>{EEC32924-33DA-AA06-A8B2-AC003C33B587}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <AssemblyName>Assembly-CSharp</AssemblyName>
@@ -73,16 +73,22 @@
     <Compile Include="Assets\RogueNoodle\GBCamera\Example Elements\Scripts\RandomPalette.cs" />
     <Compile Include="Assets\RogueNoodle\GBCamera\Example Elements\Scripts\RandomPaletteButton.cs" />
     <Compile Include="Assets\RogueNoodle\GBCamera\Example Elements\Scripts\Rotate.cs" />
+    <Compile Include="Assets\Scripts\AlexScript.cs" />
     <Compile Include="Assets\Scripts\AltFireRotation.cs" />
     <Compile Include="Assets\Scripts\Burn.cs" />
     <Compile Include="Assets\Scripts\BurntBuilding.cs" />
     <Compile Include="Assets\Scripts\ChangeUIShader.cs" />
     <Compile Include="Assets\Scripts\CharacterMovement.cs" />
     <Compile Include="Assets\Scripts\Check.cs" />
+    <Compile Include="Assets\Scripts\CommentedScript.cs" />
     <Compile Include="Assets\Scripts\CurrentWeapon.cs" />
     <Compile Include="Assets\Scripts\FireBomb.cs" />
     <Compile Include="Assets\Scripts\FireFighterMovement.cs" />
+    <Compile Include="Assets\Scripts\FPSDisplay.cs" />
     <Compile Include="Assets\Scripts\Lighter.cs" />
+    <Compile Include="Assets\Scripts\MacroCheck.cs" />
+    <Compile Include="Assets\Scripts\NewPathGeneration.cs" />
+    <Compile Include="Assets\Scripts\NewPoliceMvmt.cs" />
     <Compile Include="Assets\Scripts\PathBuilder.cs" />
     <Compile Include="Assets\Scripts\PathGenerationScript.cs" />
     <Compile Include="Assets\Scripts\PathProperties.cs" />
@@ -94,6 +100,7 @@
     <Compile Include="Assets\Scripts\ScoreData.cs" />
     <Compile Include="Assets\Scripts\ScoreReader.cs" />
     <Compile Include="Assets\Scripts\ScoreReset.cs" />
+    <Compile Include="Assets\Scripts\SpawnMasterScript.cs" />
     <Compile Include="Assets\Scripts\TriggerAddPath.cs" />
     <Compile Include="Assets\Scripts\Walkable.cs" />
     <Compile Include="Assets\Scripts\WeaponAmmo.cs" />
@@ -102,43 +109,43 @@
     <None Include="Assets\RogueNoodle\GBCamera\Example Elements\Shaders\VertexColorPBR.shader" />
     <None Include="Assets\DOTween\readme.txt" />
     <Reference Include="Unity.Timeline.Editor">
-      <HintPath>D:/FireStarter/FireStarter/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
+      <HintPath>D:/GithubPush/FireStarter2/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.ProGrids">
-      <HintPath>D:/FireStarter/FireStarter/Library/ScriptAssemblies/Unity.ProGrids.dll</HintPath>
+      <HintPath>D:/GithubPush/FireStarter2/Library/ScriptAssemblies/Unity.ProGrids.dll</HintPath>
     </Reference>
     <Reference Include="Unity.VSCode.Editor">
-      <HintPath>D:/FireStarter/FireStarter/Library/ScriptAssemblies/Unity.VSCode.Editor.dll</HintPath>
+      <HintPath>D:/GithubPush/FireStarter2/Library/ScriptAssemblies/Unity.VSCode.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.ProBuilder.AssetIdRemapUtility">
-      <HintPath>D:/FireStarter/FireStarter/Library/ScriptAssemblies/Unity.ProBuilder.AssetIdRemapUtility.dll</HintPath>
+      <HintPath>D:/GithubPush/FireStarter2/Library/ScriptAssemblies/Unity.ProBuilder.AssetIdRemapUtility.dll</HintPath>
     </Reference>
     <Reference Include="Unity.ProGrids.Editor">
-      <HintPath>D:/FireStarter/FireStarter/Library/ScriptAssemblies/Unity.ProGrids.Editor.dll</HintPath>
+      <HintPath>D:/GithubPush/FireStarter2/Library/ScriptAssemblies/Unity.ProGrids.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.TextMeshPro.Editor">
-      <HintPath>D:/FireStarter/FireStarter/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
+      <HintPath>D:/GithubPush/FireStarter2/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UI">
-      <HintPath>D:/FireStarter/FireStarter/Library/ScriptAssemblies/UnityEngine.UI.dll</HintPath>
+      <HintPath>D:/GithubPush/FireStarter2/Library/ScriptAssemblies/UnityEngine.UI.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Timeline">
-      <HintPath>D:/FireStarter/FireStarter/Library/ScriptAssemblies/Unity.Timeline.dll</HintPath>
+      <HintPath>D:/GithubPush/FireStarter2/Library/ScriptAssemblies/Unity.Timeline.dll</HintPath>
     </Reference>
     <Reference Include="Unity.CollabProxy.Editor">
-      <HintPath>D:/FireStarter/FireStarter/Library/ScriptAssemblies/Unity.CollabProxy.Editor.dll</HintPath>
+      <HintPath>D:/GithubPush/FireStarter2/Library/ScriptAssemblies/Unity.CollabProxy.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Rider.Editor">
-      <HintPath>D:/FireStarter/FireStarter/Library/ScriptAssemblies/Unity.Rider.Editor.dll</HintPath>
+      <HintPath>D:/GithubPush/FireStarter2/Library/ScriptAssemblies/Unity.Rider.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.ProBuilder.AddOns.Editor">
-      <HintPath>D:/FireStarter/FireStarter/Library/ScriptAssemblies/Unity.ProBuilder.AddOns.Editor.dll</HintPath>
+      <HintPath>D:/GithubPush/FireStarter2/Library/ScriptAssemblies/Unity.ProBuilder.AddOns.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.TextMeshPro">
-      <HintPath>D:/FireStarter/FireStarter/Library/ScriptAssemblies/Unity.TextMeshPro.dll</HintPath>
+      <HintPath>D:/GithubPush/FireStarter2/Library/ScriptAssemblies/Unity.TextMeshPro.dll</HintPath>
     </Reference>
     <Reference Include="UnityEditor.UI">
-      <HintPath>D:/FireStarter/FireStarter/Library/ScriptAssemblies/UnityEditor.UI.dll</HintPath>
+      <HintPath>D:/GithubPush/FireStarter2/Library/ScriptAssemblies/UnityEditor.UI.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.AIModule">
       <HintPath>C:/Program Files/Unity/Hub/Editor/2019.2.1f1/Editor/Data/Managed/UnityEngine/UnityEngine.AIModule.dll</HintPath>
@@ -318,7 +325,7 @@
       <HintPath>C:/Program Files/Unity/Hub/Editor/2019.2.1f1/Editor/Data/Managed/UnityEngine/UnityEngine.XRModule.dll</HintPath>
     </Reference>
     <Reference Include="DOTween">
-      <HintPath>D:/FireStarter/FireStarter/Assets/DOTween/DOTween.dll</HintPath>
+      <HintPath>D:/GithubPush/FireStarter2/Assets/DOTween/DOTween.dll</HintPath>
     </Reference>
     <Reference Include="netstandard">
       <HintPath>C:/Program Files/Unity/Hub/Editor/2019.2.1f1/Editor/Data/NetStandard/ref/2.0.0/netstandard.dll</HintPath>

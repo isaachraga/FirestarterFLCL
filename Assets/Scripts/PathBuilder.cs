@@ -5,7 +5,7 @@ using UnityEngine;
 public class PathBuilder : MonoBehaviour
 {
     public List<WalkPath> possiblePaths = new List<WalkPath>();
-    
+
 
     [Space]
 
@@ -24,8 +24,13 @@ public class PathBuilder : MonoBehaviour
 
     private void Start()
     {
-        LocatePaths();
+        //Debug.Log(6);
+        //Dissable for generation
+         LocatePaths();
     }
+    
+
+
 
     public Transform LocatePush(int direction)
     {
@@ -112,9 +117,57 @@ public class PathBuilder : MonoBehaviour
 
     }
 
+    public void PathCheck(Transform T)
+    {
+        //Debug.Log(1);
+        WalkPath WP = new WalkPath();
+        WP.target = T;
+
+        WalkPath[] WalkCheck = possiblePaths.ToArray();
+        for(int i = 0; i < WalkCheck.Length; i++)
+        {
+            if(WalkCheck[i].target == WP.target)
+            {
+                //Debug.Log(10);
+                break;
+            }
+            if(i == WalkCheck.Length - 1)
+            {
+                possiblePaths.Add(WP);
+            }
+        }
+        
+            
+    }
+
+    private void OnDestroy()
+    {
+        /*foreach (WalkPath wp in possiblePaths)
+        {
+            if (wp.target.GetComponent<PathBuilder>().possiblePaths != null)
+            {
+                foreach (WalkPath wp2 in wp.target.GetComponent<PathBuilder>().possiblePaths)
+                {
+                    if (wp2.target == this.transform)
+                    {
+                        wp.target.GetComponent<PathBuilder>().possiblePaths.Remove(wp2);
+
+                    }
+                }
+            }
+
+
+        }*/
+    }
+
+
+
 
     public void LocatePaths()
     {
+        
+        possiblePaths.Clear();
+        
         //Shoots rays in 4 directions to find possible paths
         //adds positive hits to the walkable list
 
@@ -125,9 +178,12 @@ public class PathBuilder : MonoBehaviour
         {
             if (TestUpHit.transform.CompareTag("Path"))
             {
+                //Debug.Log(1);
                 WalkPath WP = new WalkPath();
                 WP.target = TestUpHit.transform; 
                 possiblePaths.Add(WP);
+                TestUpHit.transform.GetComponent<PathBuilder>().PathCheck(this.transform);
+                
 
             }
 
@@ -139,9 +195,11 @@ public class PathBuilder : MonoBehaviour
         {
             if (TestDownHit.transform.CompareTag("Path"))
             {
+                
                 WalkPath WP = new WalkPath();
                 WP.target = TestDownHit.transform; 
                 possiblePaths.Add(WP);
+                TestDownHit.transform.GetComponent<PathBuilder>().PathCheck(this.transform);
 
             }
 
@@ -153,9 +211,11 @@ public class PathBuilder : MonoBehaviour
         {
             if (TestRightHit.transform.CompareTag("Path"))
             {
+                
                 WalkPath WP = new WalkPath();
                 WP.target = TestRightHit.transform;
                 possiblePaths.Add(WP);
+                TestRightHit.transform.GetComponent<PathBuilder>().PathCheck(this.transform);
 
             }
 
@@ -167,9 +227,11 @@ public class PathBuilder : MonoBehaviour
         {
             if (TestLeftHit.transform.CompareTag("Path"))
             {
+                
                 WalkPath WP = new WalkPath();
                 WP.target = TestLeftHit.transform;
                 possiblePaths.Add(WP);
+                TestLeftHit.transform.GetComponent<PathBuilder>().PathCheck(this.transform);
 
             }
 
@@ -285,7 +347,7 @@ public class PathBuilder : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        Gizmos.color = Color.gray;
+        /*Gizmos.color = Color.gray;
 
         Gizmos.DrawSphere(GetWalkPoint(), .1f);
 
@@ -298,7 +360,7 @@ public class PathBuilder : MonoBehaviour
                 return;
             Gizmos.color = p.active ? Color.black : Color.clear;
             Gizmos.DrawLine(GetWalkPoint(), p.target.GetComponent<PathBuilder>().GetWalkPoint());
-        }
+        }*/
     }
 
     public void AttachNewPaths()
@@ -311,6 +373,39 @@ public class PathBuilder : MonoBehaviour
     public void TriggerTempDissable()
     {
         StartCoroutine(TempDissable());
+    }
+
+    public void PathDissable()
+    {
+        foreach (WalkPath wp in possiblePaths)
+        {
+            wp.active = false;
+            foreach (WalkPath wp2 in wp.target.GetComponent<PathBuilder>().possiblePaths)
+            {
+                if (wp2.target == this.transform)
+                {
+                    wp2.active = false;
+                }
+            }
+
+        }
+    }
+
+    public void PathEnable()
+    {
+        foreach (WalkPath wp in possiblePaths)
+        {
+            wp.active = true;
+            foreach (WalkPath wp2 in wp.target.GetComponent<PathBuilder>().possiblePaths)
+            {
+                if (wp2.target == this.transform)
+                {
+                    wp2.active = true;
+
+                }
+            }
+
+        }
     }
 
     private void DisableTemp()

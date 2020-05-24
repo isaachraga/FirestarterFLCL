@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 4417234438635987213}
   - component: {fileID: 7005529351003451138}
   - component: {fileID: 7282159839901300209}
+  - component: {fileID: 1663469974140980325}
   m_Layer: 0
   m_Name: Colosseum
   m_TagString: Building
@@ -125,3 +126,20 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 126
   m_CollisionDetection: 0
+--- !u!114 &1663469974140980325
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2655437561993363618}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3ba5ef3726f3e2488d065034fbfa862, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  topAdjacent: {fileID: 0}
+  leftAdjacent: {fileID: 0}
+  rightAdjacent: {fileID: 0}
+  bottomAdjacent: {fileID: 0}
+  adjacentBuildings: 0

@@ -11,16 +11,6 @@ public class PathProperties : MonoBehaviour
     [SerializeField] GameObject bottomAdjacent = null;
     [SerializeField] int adjacentBuildings = 0;
 
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
 
     public void Setup(GameObject top, GameObject left, GameObject right, GameObject bottom)
     {

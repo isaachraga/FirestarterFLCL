@@ -5,17 +5,15 @@ using System.Linq;
 
 public class PoliceMovement : MonoBehaviour
 {
-   
+   // float speed = 1;
     public float CheckRate = 1f;
     float Timer;
     public bool PathComplete = false;
     public bool Patrolling;
     Transform RouteStop1, RouteStop2, RouteStop3, RouteStop4;
-    public Transform[] Route;
+    Transform[] Route;
     GameObject[] PathsGO;
     Transform[] Paths;
-
-    [SerializeField] private LayerMask mask;
 
 
     public bool pathfinding = false;
@@ -24,14 +22,23 @@ public class PoliceMovement : MonoBehaviour
 
     public Transform currentCube;
     public Transform clickedCube;
-    public Transform targetCube;
-
+   
 
     public List<Transform> finalPath = new List<Transform>();
+
+    [SerializeField] GameObject gridManager;
+
+    int exploreSafetyLimit = 60;
+    int exploreSafetyLimiter = 0;
+
+    //when police sees a firefighter, rebuild the path
+    //keep destination
 
 
     private void Start()
     {
+        gridManager = GameObject.FindGameObjectWithTag("Grid");
+        exploreSafetyLimit = 30*30;
         BuildRoute();
     }
 
@@ -44,188 +51,91 @@ public class PoliceMovement : MonoBehaviour
                 
                 if (Raycast(0) || Raycast(1) || Raycast(2) || Raycast(3))
                 {
-                    Debug.Log("hit palyer");
+                    Debug.Log("Player Sighted.");
                     //police has seen player and builds path to last location
-                    if (FireRaycast(0) || FireRaycast(1) || FireRaycast(2) || FireRaycast(3))
-                    {
-                        //if police see a firefighter, rebuild route to avoid running into them
-                        FFRebuildChase();
-                    }
-                    else
-                    {
-                        pathfinding = true;
-                        PathComplete = false;
-                        FindPath();
-                    } 
+                    pathfinding = true;
+                    PathComplete = false;
+                    FindPath();
+                    
                 }
                 else
                 {
-
-                    if (FireRaycast(0) || FireRaycast(1) || FireRaycast(2) || FireRaycast(3))
-                    {
-                        //if police see a firefighter, rebuild route to avoid running into them
-                        FFRebuildRoute();
-                    }
                     if (!pathfinding)
                     {
-                        //police starts moving to a route location if they arent searching or dont currently see player
+                    //police starts moving to a route location if they arent searching or dont currently see player
                         pathfinding = true;
                         PathComplete = false;
-                        PatrolRoute(null);  
+                        
+                        PatrolRoute();
                     }
+
                 }
                 Timer = 0;
             }
-    }
-
-    void FFRebuildChase()
-    {
-        if (targetCube != null)
-        {
-            Transform TempTargetCube = targetCube;
-            Clear();
-            targetCube = TempTargetCube;
-            pathfinding = true;
-            PathComplete = false;
-            RaycastDown();
-            FindPath();
-
-
-        }
-    }
-    void FFRebuildRoute()
-    {
-        if (targetCube != null)
-        { 
-            Transform TempTargetCube = targetCube;
-            Clear();
-            targetCube = TempTargetCube;
-            pathfinding = true;
-            PathComplete = false;
-
-            PatrolRoute(targetCube);
-
-
-        }
-    }
-
-    bool FireRaycast(int direction)
-    {
         
-        if (direction == 0)
-        {
+        
 
-            Ray playerRay = new Ray(transform.position, transform.forward);
-            RaycastHit playerHit;
 
-            if (Physics.Raycast(playerRay, out playerHit))
-            {
-                if (playerHit.transform.CompareTag("FireFighter"))
-                {
-
-                    playerHit.transform.GetComponent<FireFighterMovement>().RaycastDownDissable();
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            else
-            {
-                return false;
-            }
-        }
-        else if (direction == 1)
-        {
-            Ray playerRay = new Ray(transform.position, -transform.right);
-            RaycastHit playerHit;
-
-            if (Physics.Raycast(playerRay, out playerHit))
-            {
-                if (playerHit.transform.CompareTag("FireFighter"))
-                {
-
-                    playerHit.transform.GetComponent<FireFighterMovement>().RaycastDownDissable();
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            else
-            {
-                return false;
-            }
-        }
-        else if (direction == 2)
-        {
-            Ray playerRay = new Ray(transform.position, -transform.forward);
-            RaycastHit playerHit;
-
-            if (Physics.Raycast(playerRay, out playerHit))
-            {
-                if (playerHit.transform.CompareTag("FireFighter"))
-                {
-
-                    playerHit.transform.GetComponent<FireFighterMovement>().RaycastDownDissable();
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            else
-            {
-                return false;
-            }
-        }
-        else if (direction == 3)
-        {
-            Ray playerRay = new Ray(transform.position, transform.right);
-            RaycastHit playerHit;
-
-            if (Physics.Raycast(playerRay, out playerHit))
-            {
-                if (playerHit.transform.CompareTag("FireFighter"))
-                {
-
-                    playerHit.transform.GetComponent<FireFighterMovement>().RaycastDownDissable();
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            else
-            {
-                return false;
-            }
-        }
-        else
-        {
-            return false;
-        }
     }
 
+    Transform CheckThisSpace()
+    {
+        Transform space = null;
+        Ray enemyRay = new Ray(transform.position, -transform.up);
+        RaycastHit spaceHit;
+        if (Physics.Raycast(enemyRay, out spaceHit))
+        {
+            if (spaceHit.transform.tag == "Path")
+            {
+                space = spaceHit.transform;
+            }
+        }
+        return space;
+    }
+
+
+    /*I made Chancges to this function*/
     void BuildRoute()
     {
+        int currentEnemyI = 0;
+        int currentEnemyJ = 0;
 
-        //first route point is where they spawn
-        //following route points should be within 20 blocks of
         Route = new Transform[] { RouteStop1, RouteStop2, RouteStop3, RouteStop4 };
+        int routeILimit = 0;
+        int routeJLimit = 0;
+        
+        int gridSize = gridManager.GetComponent<NewPathGeneration>().gridSize;
+        GameObject currentSpace = CheckThisSpace().gameObject;
+        currentEnemyI = gridManager.GetComponent<PathGenerationScript>().GetEnemyCoordinates(currentSpace)[0];
+        currentEnemyJ = gridManager.GetComponent<PathGenerationScript>().GetEnemyCoordinates(currentSpace)[1];
 
-        RaycastDown();
-        RouteStop1 = currentCube;
-        Route[0] = RouteStop1;
+        int directionToPlayerI = (int)Mathf.Sign(GameObject.FindGameObjectWithTag("Player").transform.position.x - transform.position.x);
+        int directionToPlayerJ = (int)Mathf.Sign(GameObject.FindGameObjectWithTag("Player").transform.position.z - transform.position.z);
+        if (directionToPlayerI == 0)
+        {
+            directionToPlayerI = 1;
+        }
+        if (directionToPlayerJ == 0)
+        {
+            directionToPlayerJ = 1;
+        }
 
+        routeILimit = Random.Range(2, ((2*gridManager.GetComponent<PathGenerationScript>().GetVisionLimit()) - 2));
+        routeJLimit = Random.Range(2, ((2*gridManager.GetComponent<PathGenerationScript>().GetVisionLimit()) - 2));
+
+        Route[0] = gridManager.GetComponent<PathGenerationScript>().GetNearestPath(currentEnemyI + (directionToPlayerI * routeILimit), currentEnemyJ);
+        Route[1] = gridManager.GetComponent<PathGenerationScript>().GetNearestPath(currentEnemyI + (directionToPlayerI * routeILimit), currentEnemyJ+(directionToPlayerJ*routeJLimit));
+        Route[2] = gridManager.GetComponent<PathGenerationScript>().GetNearestPath(currentEnemyI, currentEnemyJ + (directionToPlayerJ * routeJLimit));
+        Route[3] = gridManager.GetComponent<PathGenerationScript>().GetNearestPath(currentEnemyI, currentEnemyJ);
+        Debug.Log("Route:0 ALTERNATIVE = " + currentEnemyI + " + ( " + directionToPlayerI + " * " + routeILimit + ") , " + currentEnemyJ);
+        Debug.Log("Route:0 = " + Route[0].position.x + ", " + Route[0].position.z);
+        Debug.Log("Route:1 = " + Route[1].position.x + ", " + Route[1].position.z);
+        Debug.Log("Route:2 = " + Route[2].position.x + ", " + Route[2].position.z);
+        Debug.Log("Route:3 = " + Route[3].position.x + ", " + Route[3].position.z);
         //
-        //might be too intensive for full game, be aware of this array
+        //Limit this to area generated on police creation
         //
-        PathsGO = GameObject.FindGameObjectsWithTag("Path");
+        /*PathsGO = GameObject.FindGameObjectsWithTag("Path");
         Paths = new Transform[PathsGO.Length];
 
         for (int i = 0; i < PathsGO.Length; ++i)
@@ -233,159 +143,145 @@ public class PoliceMovement : MonoBehaviour
             Paths[i] = PathsGO[i].transform;
         }
 
-        for(int i = 1; i < Route.Length; i++)
+        for(int i = 0; i < Route.Length; i++)
         {
-            
-            bool found = false;
-            while (!found)
-            {
-                int Rand = (int)Random.Range(0, Paths.Length);
-                //find distance between starting point and this route point
-                //if less then 20 found is true
-                float tempMag;
-
-                tempMag = Paths[Rand].position.magnitude - currentCube.position.magnitude;
-                //Debug.Log(tempMag + " " + Paths[Rand].position.magnitude + " " + currentCube.position.magnitude);
-                if (tempMag < 15f)
-                {
-                    Route[i] = Paths[Rand];
-                    found = true;
-                }
-               
-            }
-            
-            
-        
-        }
+            int Rand = (int)Random.Range(0, Paths.Length);
+            Route[i] = Paths[Rand];
+            //Debug.Log(Route[i].transform.name);
+        }*/
     }
     
     
-    void PatrolRoute(Transform TargetCube)
+    void PatrolRoute()
     {
         //tells police which route location to go to next
         RaycastDown();
-        if (TargetCube == null)
+        if (currentCube == Route[0])
         {
-            
-            if (currentCube == Route[0])
-            {
-                targetCube = Route[1];
-                FindPath();
-            }
-            else if (currentCube == Route[1])
-            {
-                targetCube = Route[2];
-                FindPath();
-            }
-            else if (currentCube == Route[2])
-            {
-                targetCube = Route[3];
-                FindPath();
-            }
-            else if (currentCube == Route[3])
-            {
-                targetCube = Route[0];
-                FindPath();
-            }
-            else
-            {
-                //finds closest route location
-                Vector3 TempDistance;
-                float ShortestDistance = 1000f;
-
-                for (int i = 0; i < Route.Length; i++)
-                {
-                    TempDistance = currentCube.position - Route[i].position;
-
-                    if (ShortestDistance > TempDistance.sqrMagnitude)
-                    {
-                        targetCube = Route[i];
-                        ShortestDistance = TempDistance.sqrMagnitude;
-                    }
-                }
-                FindPath();
-            }
+            clickedCube = Route[1];
+            FindPath();
+        }
+        else if (currentCube == Route[1])
+        {
+            clickedCube = Route[2];
+            FindPath();
+        }
+        else if (currentCube == Route[2])
+        {
+            clickedCube = Route[3];
+            FindPath();
+        }
+        else if (currentCube == Route[3])
+        {
+            clickedCube = Route[0];
+            FindPath();
         }
         else
         {
+            //finds closest route location
+            Vector3 TempDistance;
+            float ShortestDistance = 1000f;
+
+            for(int i = 0; i < Route.Length; i++)
+            {
+                TempDistance = currentCube.position - Route[i].position;
+
+                if(ShortestDistance > TempDistance.sqrMagnitude)
+                {
+                    clickedCube = Route[i];
+                    ShortestDistance = TempDistance.sqrMagnitude;
+                }
+            }
             FindPath();
         }
-        
     }
    
     void FindPath()
     {
-        //finds path options
-        //puts the police's current cube in the visitedCubes list, 
-        //all of the the path options in nextCube list, 
-        //and attaches the curent cube to all of the path 
-        //options using the variable previousBlock
-        //Then send info to exploreCube
-        List<Transform> nextCubes = new List<Transform>();
-        List<Transform> visitedCubes = new List<Transform>();
-
-        foreach (WalkPath path in currentCube.GetComponent<PathBuilder>().possiblePaths)
+        for (int i = 0; i < 3; i++)
         {
-            if (path.active)
+            //finds path options
+            List<Transform> nextCubes = new List<Transform>();
+            List<Transform> pastCubes = new List<Transform>();
+
+            foreach (WalkPath path in currentCube.GetComponent<PathBuilder>().possiblePaths)
             {
-                nextCubes.Add(path.target);
-                path.target.GetComponent<PathBuilder>().previousBlock = currentCube;
+                if (path.active)
+                {
+                    nextCubes.Add(path.target);
+                    path.target.GetComponent<PathBuilder>().previousBlock = currentCube;
+                }
+            }
+
+            pastCubes.Add(currentCube);
+            exploreSafetyLimiter = 0;
+
+
+
+            ExploreCube(nextCubes, pastCubes);
+            if (exploreSafetyLimit < exploreSafetyLimiter)
+            {
+                break;
             }
         }
-
-        visitedCubes.Add(currentCube);
-
-        ExploreCube(nextCubes, visitedCubes);
         BuildPath();
     }
 
     void ExploreCube(List<Transform> nextCubes, List<Transform> visitedCubes)
     {
+        Transform current;
         //looks through all possible paths for best path
-        //ExploreCube turns the first cube in the nextCube 
-        //list into the currentCube and check to see if it is the target location
-        //Then it repeats the same step from FindPath, 
-        //checks if there are any cubes in the nextCube list, 
-        //and then reruns explorecube with the new information
-        //? The ExploreCube's problem could be that its not 
-        //able to ever locate the target location and now that
-        //the level is procedurally generated the amount of locations 
-        //it has to go through could be a problem?
-        Transform current = nextCubes.First();
-        nextCubes.Remove(current);
-
-        if (current == targetCube)
-        {
-            nextCubes.Clear();
-            visitedCubes.Clear();
-            return;
-        }
-
-        foreach (WalkPath path in current.GetComponent<PathBuilder>().possiblePaths)
-        {
-            if (!visitedCubes.Contains(path.target) && path.active)
-            {
-                nextCubes.Add(path.target);
-                path.target.GetComponent<PathBuilder>().previousBlock = current;
-            }
-        }
-
-        visitedCubes.Add(current);
-
         if (nextCubes.Any())
         {
-            ExploreCube(nextCubes, visitedCubes);
+            current = nextCubes.First();
+            nextCubes.Remove(current);
+
+            if (current == clickedCube)
+            {
+                nextCubes.Clear();
+                visitedCubes.Clear();
+                return;
+            }
+
+            foreach (WalkPath path in current.GetComponent<PathBuilder>().possiblePaths)
+            {
+                if (!visitedCubes.Contains(path.target) && path.active)
+                {
+                    nextCubes.Add(path.target);
+                    path.target.GetComponent<PathBuilder>().previousBlock = current;
+                }
+            }
+
+            visitedCubes.Add(current);
+
+            if (exploreSafetyLimiter >= exploreSafetyLimit)
+            {
+                nextCubes.Clear();
+                visitedCubes.Clear();
+                int routeIndex = System.Array.IndexOf(Route, clickedCube);
+                routeIndex++;
+                if (routeIndex >= Route.Length)
+                {
+                    routeIndex = 0;
+                }
+                clickedCube = Route[routeIndex];
+                return;
+            }
+
+            if (nextCubes.Any() && exploreSafetyLimiter < exploreSafetyLimit)
+            {
+                exploreSafetyLimiter++;
+                ExploreCube(nextCubes, visitedCubes);
+            }
         }
+        
         
     }
 
     void BuildPath()
     {
         //builds the route
-        //BuildPath runs when ExploreCube locates the target cube,
-        //then adds the completed path to the finalPath list by 
-        //itterating through each cube's previous block variable
-        Transform cube = targetCube;
+        Transform cube = clickedCube;
         while (cube != currentCube)
         {
             finalPath.Add(cube);
@@ -395,7 +291,7 @@ public class PoliceMovement : MonoBehaviour
                 return;
         }
 
-        finalPath.Insert(0, targetCube);
+        finalPath.Insert(0, clickedCube);
 
         StartCoroutine(PursuitPath());
 
@@ -410,7 +306,7 @@ public class PoliceMovement : MonoBehaviour
         }
         finalPath.Clear();
         currentCube = null;
-        targetCube = null;
+        clickedCube = null;
         pathfinding = false;
         StopAllCoroutines();
         PathComplete = true;
@@ -438,7 +334,6 @@ public class PoliceMovement : MonoBehaviour
 
     bool Raycast(int direction)
     {
-        
         //searches all possible directions for player
         //if seen, resets current path to build an updated version
          if (direction == 0)
@@ -447,12 +342,12 @@ public class PoliceMovement : MonoBehaviour
              Ray playerRay = new Ray(transform.position, transform.forward);
              RaycastHit playerHit;
 
-             if (Physics.Raycast(playerRay, out playerHit, 50f, mask))
+             if (Physics.Raycast(playerRay, out playerHit))
              {
                  if (playerHit.transform.CompareTag("Player"))
                  {
                     Clear();
-                    targetCube = playerHit.transform.GetComponent<CharacterMovement>().RaycastDown();
+                    clickedCube = playerHit.transform.GetComponent<CharacterMovement>().RaycastDown();
                     RaycastDown();
                      return true;
                  }
@@ -482,12 +377,12 @@ public class PoliceMovement : MonoBehaviour
              Ray playerRay = new Ray(transform.position, -transform.right);
              RaycastHit playerHit;
 
-            if (Physics.Raycast(playerRay, out playerHit, 50f, mask))
+            if (Physics.Raycast(playerRay, out playerHit))
             {
                 if (playerHit.transform.CompareTag("Player"))
                 {
                     Clear();
-                    targetCube = playerHit.transform.GetComponent<CharacterMovement>().RaycastDown();
+                    clickedCube = playerHit.transform.GetComponent<CharacterMovement>().RaycastDown();
                     RaycastDown();
                     return true;
                 }
@@ -516,15 +411,14 @@ public class PoliceMovement : MonoBehaviour
          {
              Ray playerRay = new Ray(transform.position, -transform.forward);
              RaycastHit playerHit;
-             
 
-            if (Physics.Raycast(playerRay, out playerHit, 50f, mask))
+            if (Physics.Raycast(playerRay, out playerHit))
             {
                
                 if (playerHit.transform.CompareTag("Player"))
                 {
                     Clear();
-                    targetCube = playerHit.transform.GetComponent<CharacterMovement>().RaycastDown();
+                    clickedCube = playerHit.transform.GetComponent<CharacterMovement>().RaycastDown();
                     RaycastDown();
                     return true;
                 }
@@ -554,12 +448,12 @@ public class PoliceMovement : MonoBehaviour
              Ray playerRay = new Ray(transform.position, transform.right);
              RaycastHit playerHit;
 
-            if (Physics.Raycast(playerRay, out playerHit, 50f, mask))
+            if (Physics.Raycast(playerRay, out playerHit))
             {
                 if (playerHit.transform.CompareTag("Player"))
                 {
                     Clear();
-                    targetCube = playerHit.transform.GetComponent<CharacterMovement>().RaycastDown();
+                    clickedCube = playerHit.transform.GetComponent<CharacterMovement>().RaycastDown();
                     RaycastDown();
                     return true;
                 }
@@ -590,8 +484,7 @@ public class PoliceMovement : MonoBehaviour
          }
      }
 
-    //not sure if i need this or not
-    /*public void RaycastDownDissable()
+    public void RaycastDownDissable()
     {
         Transform DissablePath = null;
         //retrieves current location of police
@@ -609,7 +502,7 @@ public class PoliceMovement : MonoBehaviour
         }
         DissablePath.GetComponent<PathBuilder>().TriggerTempDissable();
 
-    }*/
+    }
 
     IEnumerator PursuitPath()
     {

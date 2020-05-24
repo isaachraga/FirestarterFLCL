@@ -109,6 +109,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   buildingNum: 3
   Burnt: {fileID: 770918589372309128, guid: d4c43f3065b64ea43ba80464dff20207, type: 3}
+  a: {fileID: 11400000, guid: 9f1af00425e30234faf74612c64304e1, type: 2}
 --- !u!54 &7434874402550718128
 Rigidbody:
   m_ObjectHideFlags: 0

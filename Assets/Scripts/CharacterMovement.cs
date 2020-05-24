@@ -6,48 +6,163 @@ using UnityEngine.AI;
 public class CharacterMovement : MonoBehaviour
 {
     float speed = 1;
-    [SerializeField] private LayerMask mask;
-
+    GameObject[] MacroGrid;
+    public GameObject NewPathGeneration;
+    void Start()
+    {
+        NewPathGeneration = GameObject.FindGameObjectWithTag("Gen");
+        CheckSpace();    
+    }
 
     void Update()
     {
         //replace with buttons
         //if there isnt a building in the way, move in desired direction
         if (Input.GetKeyDown(KeyCode.W)){
+            //CheckGrid();
             if (Raycast(0))
             {
                 TurnOff();
                 transform.position += transform.forward * speed;
             }
-            //CheckSpace();
+            CheckSpace();
+            CheckToSpawn();
         }
         if (Input.GetKeyDown(KeyCode.A)){
+            //CheckGrid();
             if (Raycast(1))
             {
                 TurnOff();
                 transform.position += transform.right * -speed;
             }
-            //CheckSpace();
+            CheckSpace();
+            CheckToSpawn();
         }
         if (Input.GetKeyDown(KeyCode.S)){
+            //CheckGrid();
             if (Raycast(2))
             {
                 TurnOff();
                 transform.position += transform.forward * -speed;
             }
-           // CheckSpace();
+            CheckSpace();
+            CheckToSpawn();
         }
         if (Input.GetKeyDown(KeyCode.D)){
+            //CheckGrid();
             if (Raycast(3))
             {
                 TurnOff();
                 transform.position += transform.right * speed;
-
+                
             }
-            
-            //CheckSpace();
+            CheckSpace();
+            CheckToSpawn();
         }
     }
+
+    void CheckToSpawn()
+    {
+        //FROMSPACEJAM
+        //GameObject.FindGameObjectWithTag("Spawner").GetComponent<SpawnMasterScript>().EnemySpawn();
+    }
+
+    /*void CheckGrid()
+    {
+        MacroGrid = GameObject.FindGameObjectsWithTag("Macro");
+        for(int i = 0; i < MacroGrid.Length; i++)
+        {
+            Vector3 dis =  MacroGrid[i].transform.position - transform.position;
+            //Debug.Log(dis.sqrMagnitude);
+            if(dis.sqrMagnitude > 160f)
+            {
+                for (int k = 0; k < MacroGrid.Length; k++)
+                {
+
+                    if (MacroGrid[k].transform.position == new Vector3(MacroGrid[i].transform.position.x - 9, 0, MacroGrid[i].transform.position.z + 9))
+                    {
+                        Debug.Log(1);
+                        float TempX = MacroGrid[i].transform.position.x - 27f;
+                        float TempY = MacroGrid[i].transform.position.z + 27f;
+                        NewPathGeneration.GetComponent<NewPathGeneration>().GenerateMicroGrid((int)TempX, (int)TempY);
+                        Destroy(MacroGrid[i]);
+                        break;
+                    }
+                    if (MacroGrid[k].transform.position == new Vector3(MacroGrid[i].transform.position.x - 9, 0, MacroGrid[i].transform.position.z))
+                    {
+                        Debug.Log(2);
+                        float TempX = MacroGrid[i].transform.position.x - 27f;
+                        float TempY = MacroGrid[i].transform.position.z;
+                        NewPathGeneration.GetComponent<NewPathGeneration>().GenerateMicroGrid((int)TempX, (int)TempY);
+                        Destroy(MacroGrid[i]);
+                        break;
+                    }
+                   if (MacroGrid[k].transform.position == new Vector3(MacroGrid[i].transform.position.x - 9, 0, MacroGrid[i].transform.position.z-9))
+                    {
+                        Debug.Log(3);
+                        float TempX = MacroGrid[i].transform.position.x - 27f;
+                        float TempY = MacroGrid[i].transform.position.z - 27f;
+                        NewPathGeneration.GetComponent<NewPathGeneration>().GenerateMicroGrid((int)TempX, (int)TempY);
+                        Destroy(MacroGrid[i]);
+                        break;
+                    }
+
+
+                    if (MacroGrid[k].transform.position == new Vector3(MacroGrid[i].transform.position.x + 9, 0, MacroGrid[i].transform.position.z - 9))
+                    {
+                        Debug.Log(4);
+                        float TempX = MacroGrid[i].transform.position.x + 27f;
+                        float TempY = MacroGrid[i].transform.position.z - 27f;
+                        NewPathGeneration.GetComponent<NewPathGeneration>().GenerateMicroGrid((int)TempX, (int)TempY);
+                        Destroy(MacroGrid[i]);
+                        break;
+                    }
+                    if (MacroGrid[k].transform.position == new Vector3(MacroGrid[i].transform.position.x + 9, 0, MacroGrid[i].transform.position.z))
+                    {
+                        Debug.Log(5);
+                        float TempX = MacroGrid[i].transform.position.x + 27f;
+                        float TempY = MacroGrid[i].transform.position.z;
+                        NewPathGeneration.GetComponent<NewPathGeneration>().GenerateMicroGrid((int)TempX, (int)TempY);
+                        Destroy(MacroGrid[i]);
+                        break;
+                    }
+                    if (MacroGrid[k].transform.position == new Vector3(MacroGrid[i].transform.position.x + 9, 0, MacroGrid[i].transform.position.z + 9))
+                    {
+                        Debug.Log(6);
+                        float TempX = MacroGrid[i].transform.position.x + 27f;
+                        float TempY = MacroGrid[i].transform.position.z + 27f;
+                        NewPathGeneration.GetComponent<NewPathGeneration>().GenerateMicroGrid((int)TempX, (int)TempY);
+                        Destroy(MacroGrid[i]);
+                        break;
+                    }
+
+
+                    if (MacroGrid[k].transform.position == new Vector3(MacroGrid[i].transform.position.x, 0, MacroGrid[i].transform.position.z-9))
+                    {
+                        Debug.Log(7);
+                        float TempX = MacroGrid[i].transform.position.x;
+                        float TempY = MacroGrid[i].transform.position.z - 27f;
+                        NewPathGeneration.GetComponent<NewPathGeneration>().GenerateMicroGrid((int)TempX, (int)TempY);
+                        Destroy(MacroGrid[i]);
+                        break;
+                    }
+                    if (MacroGrid[k].transform.position == new Vector3(MacroGrid[i].transform.position.x, 0, MacroGrid[i].transform.position.z + 9))
+                    {
+                        Debug.Log(8);
+                        float TempX = MacroGrid[i].transform.position.x;
+                        float TempY = MacroGrid[i].transform.position.z + 27f;
+                        NewPathGeneration.GetComponent<NewPathGeneration>().GenerateMicroGrid((int)TempX, (int)TempY);
+                        Destroy(MacroGrid[i]);
+                        break;
+                    }
+                }
+                       
+                
+                    
+            }
+        }
+    }*/
+
 
     void CheckSpace()
     {
@@ -58,7 +173,8 @@ public class CharacterMovement : MonoBehaviour
         {
             if (playerHit.transform.tag == "Path")
             {
-                GameObject.FindGameObjectWithTag("Grid").GetComponent<PathGenerationScript>().SetPlayerSquare(playerHit.transform.gameObject);
+                //FROM SPACEJAM
+                //GameObject.FindGameObjectWithTag("Grid").GetComponent<PathGenerationScript>().SetPlayerSquare(playerHit.transform.gameObject);
             }
         }
     }
@@ -85,7 +201,7 @@ public class CharacterMovement : MonoBehaviour
             Ray playerRay = new Ray(transform.position, transform.forward);
             RaycastHit playerHit;
 
-            if (Physics.Raycast(playerRay, out playerHit, .5f, mask))
+            if (Physics.Raycast(playerRay, out playerHit, .5f))
             {
                 if (playerHit.transform.CompareTag("Building") || playerHit.transform.CompareTag("Burnt") || playerHit.transform.CompareTag("FireFighter")){
                     return false;

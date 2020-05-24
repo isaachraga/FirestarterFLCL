@@ -12,6 +12,9 @@ TagManager:
   - Grid
   - Lighter
   - FireBomb
+  - Spawner
+  - Gen
+  - Macro
   layers:
   - Default
   - TransparentFX
