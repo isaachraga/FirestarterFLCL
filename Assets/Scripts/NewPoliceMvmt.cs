@@ -688,6 +688,22 @@ public class NewPoliceMvmt : MonoBehaviour
         }
     }
 
+    void CheckValidSpace()
+    {
+        Ray PositionRay = new Ray(transform.position, -transform.up);
+        RaycastHit PositionHit;
+
+        if (Physics.Raycast(PositionRay, out PositionHit))
+        {
+            if (PositionHit.transform.GetComponent<PathBuilder>() == null)
+            {
+                Destroy(this.gameObject);
+
+            }
+
+        }
+    }
+
     //not sure if i need this or not
     /*public void RaycastDownDissable()
     {
